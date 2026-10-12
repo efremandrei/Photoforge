@@ -2,6 +2,8 @@
 
 PhotoForge3D reconstructs a real 3D surface from overlapping photographs and prepares an STL for a slicer. Android captures/imports photos; a Windows PC runs COLMAP 4.2.1 and OpenMVS 2.4.0 on the CPU. The PC app also works independently with photos from any camera. No paid reconstruction API or cloud account is required.
 
+Source repository: [efremandrei/Photoforge](https://github.com/efremandrei/Photoforge). The initial version 1.0.0 downloads are hosted at the release link below.
+
 ## Start
 
 1. Download the Windows package from [Releases](https://github.com/efremandrei/PhotoForge3D/releases), extract the entire ZIP into a writable folder, and open `PhotoForge3D-PC.exe`. Keep the included `_internal` and `tools` folders beside it.

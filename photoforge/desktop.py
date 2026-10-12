@@ -113,7 +113,7 @@ class Desktop:
         self.build()
 
     def about(self):
-        messagebox.showinfo('About PhotoForge3D', 'PhotoForge3D 1.0.0 · build 1\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/PhotoForge3D\nCOLMAP (BSD) + OpenMVS (AGPL-3.0)\nLocal photogrammetry and verified STL export.')
+        messagebox.showinfo('About PhotoForge3D', 'PhotoForge3D 1.0.0 · build 1\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\nCOLMAP (BSD) + OpenMVS (AGPL-3.0)\nLocal photogrammetry and verified STL export.')
 
     def reload_scans(self):
         jobs = sorted([json.loads(p.read_text()) for p in self.jobs.base.glob('*/job.json')], key=lambda d:d['created'], reverse=True)
