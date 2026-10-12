@@ -1,0 +1,22 @@
+<resources>
+    <style name="Theme.PhotoForge.Starting.Dark" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/forge_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.PhotoForge.Dark</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splash_wordmark_dark</item>
+        <item name="android:statusBarColor">@color/forge_dark</item>
+        <item name="android:navigationBarColor">@color/forge_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+    <style name="Theme.PhotoForge.Starting.Light" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/forge_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.PhotoForge.Light</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/splash_wordmark_light</item>
+        <item name="android:statusBarColor">@color/forge_light</item>
+        <item name="android:navigationBarColor">@color/forge_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

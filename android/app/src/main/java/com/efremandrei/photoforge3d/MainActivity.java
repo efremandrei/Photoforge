@@ -15,6 +15,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
+import androidx.core.splashscreen.SplashScreen;
 
 public class MainActivity extends Activity {
     private static final int IMPORT=10,CAPTURE=11,SAVE=12;
@@ -23,6 +24,7 @@ public class MainActivity extends Activity {
     private final ArrayList<Uri> photos=new ArrayList<>();
     private android.content.SharedPreferences prefs;
     private boolean dark,connected=false,busy=false,visible=false,previewLoaded=false;
+    private boolean startupReady=false;
     private int bg,fg,panel,muted;
     private String server="",token="",jobId="",jobStatus="";
     private Uri captureUri;
@@ -37,11 +39,16 @@ public class MainActivity extends Activity {
     private final Runnable polling=new Runnable(){public void run(){if(visible&&!jobId.isEmpty()&&!busy)poll();if(visible)handler.postDelayed(this,2500);}};
 
     @Override public void onCreate(Bundle b) {
-        super.onCreate(b);prefs=getSharedPreferences("settings",MODE_PRIVATE);dark=prefs.getBoolean("dark",true);
+        prefs=getSharedPreferences("settings",MODE_PRIVATE);dark=prefs.getBoolean("dark",true);
+        setTheme(dark?R.style.Theme_PhotoForge_Starting_Dark:R.style.Theme_PhotoForge_Starting_Light);
+        SplashScreen splash=SplashScreen.installSplashScreen(this);
+        splash.setKeepOnScreenCondition(()->!startupReady);
+        super.onCreate(b);
         server=prefs.getString("server","");token=prefs.getString("token","");jobId=prefs.getString("job","");
         try { JSONArray stored=new JSONArray(prefs.getString("photos","[]"));for(int i=0;i<stored.length();i++)photos.add(Uri.parse(stored.getString(i))); } catch(Exception ignored){}
         if(b!=null&&b.containsKey("capture"))captureUri=Uri.parse(b.getString("capture"));
         build();
+        startupReady=true;
     }
     @Override protected void onStart(){super.onStart();visible=true;handler.removeCallbacks(polling);handler.post(polling);}
     @Override protected void onStop(){super.onStop();visible=false;handler.removeCallbacks(polling);}
@@ -54,8 +61,10 @@ public class MainActivity extends Activity {
     private LinearLayout card(String title){LinearLayout l=new LinearLayout(this);l.setOrientation(LinearLayout.VERTICAL);l.setPadding(dp(16),dp(10),dp(16),dp(16));l.setBackground(shape(panel));LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(14);content.addView(l,p);l.addView(label(title,12,0xff36c8b2));return l;}
     private void row(LinearLayout parent,View a,View b){LinearLayout r=new LinearLayout(this);r.setOrientation(LinearLayout.HORIZONTAL);r.addView(a,new LinearLayout.LayoutParams(0,-2,1));r.addView(b,new LinearLayout.LayoutParams(0,-2,1));parent.addView(r);}
     private void build(){
+        setTheme(dark?R.style.Theme_PhotoForge_Dark:R.style.Theme_PhotoForge_Light);
         bg=dark?0xff101722:0xffedf3fa;fg=dark?0xffecf4fa:0xff192433;panel=dark?0xff1c2838:Color.WHITE;muted=dark?0xffacbdcd:0xff52667a;
         getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);
+        getWindow().getDecorView().setSystemUiVisibility(dark?0:View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
         LinearLayout outer=new LinearLayout(this);outer.setOrientation(LinearLayout.VERTICAL);outer.setBackgroundColor(bg);
         outer.setOnApplyWindowInsetsListener((v,insets)->{v.setPadding(insets.getSystemWindowInsetLeft(),insets.getSystemWindowInsetTop(),insets.getSystemWindowInsetRight(),insets.getSystemWindowInsetBottom());return insets.consumeSystemWindowInsets();});
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);outer.addView(scroll,new LinearLayout.LayoutParams(-1,-1));
@@ -96,7 +105,7 @@ public class MainActivity extends Activity {
     private void info(String title,String text){new AlertDialog.Builder(this).setTitle(title).setMessage(text).setPositiveButton("OK",null).show();}
     private void error(Exception e){String s=e.getMessage();runOnUiThread(()->info("PhotoForge3D",s==null?"The operation failed. Please retry.":s));}
     private void guide(){info("Capture guide","Keep the object still and walk the camera around it.\n\nTake 30–80 sharp photos in 2–3 rings at different heights, with 70–80% overlap. Keep the same lens, avoid zoom, and use soft, even light.\n\nCapture every side you need. A turntable with an unmasked stationary background can confuse reconstruction. Matte, textured objects work best. Glossy, clear, plain, or moving objects often fail.\n\nCPU processing can take minutes to hours. Cropping and gap sealing may change the model; inspect the result in your slicer.");}
-    private void about(){info("About PhotoForge3D","Version 1.0.0 · build 1\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\n\nLocal photogrammetry with COLMAP (BSD) and OpenMVS (AGPL-3.0). STL checks confirm a closed solid, not guaranteed dimensional accuracy or printability.");}
+    private void about(){info("About PhotoForge3D","Version 1.1.0 · build 2\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\n\nLocal photogrammetry with COLMAP (BSD) and OpenMVS (AGPL-3.0). STL checks confirm a closed solid, not guaranteed dimensional accuracy or printability.");}
     private String validateAddress(String s) throws Exception{
         URI uri=new URI(s);if(!"http".equals(uri.getScheme())||uri.getHost()==null||uri.getUserInfo()!=null||uri.getQuery()!=null||uri.getFragment()!=null||!(uri.getPath()==null||uri.getPath().isEmpty()||uri.getPath().equals("/")))throw new Exception("Enter the PC's local HTTP address, including :8765.");
         InetAddress ip=InetAddress.getByName(uri.getHost());if(!(ip.isSiteLocalAddress()||ip.isLoopbackAddress()))throw new Exception("Use a local PC address on your trusted Wi-Fi.");return s.replaceAll("/+$","");
@@ -124,7 +133,7 @@ public class MainActivity extends Activity {
     @Override protected void onActivityResult(int req,int result,Intent data){super.onActivityResult(req,result,data);if(req==CAPTURE&&captureUri!=null){Uri u=captureUri;captureUri=null;try{if(result==RESULT_OK){ContentValues v=new ContentValues();v.put(MediaStore.Images.Media.IS_PENDING,0);getContentResolver().update(u,v,null,null);photos.add(u);}else getContentResolver().delete(u,null,null);}catch(Exception e){error(e);}savePhotos();updatePhotos();return;}
         if(result!=RESULT_OK||data==null)return;
         if(req==IMPORT){ArrayList<Uri> list=new ArrayList<>();if(data.getClipData()!=null)for(int i=0;i<data.getClipData().getItemCount();i++)list.add(data.getClipData().getItemAt(i).getUri());else if(data.getData()!=null)list.add(data.getData());for(Uri u:list){if(photos.size()>=240)break;try{getContentResolver().takePersistableUriPermission(u,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception ignored){}if(!photos.contains(u))photos.add(u);}savePhotos();updatePhotos();}
-        if(req==SAVE&&data.getData()!=null){Uri dest=data.getData();worker.execute(()->{try(InputStream in=new FileInputStream(new File(getCacheDir(),"model.stl"));OutputStream out=getContentResolver().openOutputStream(dest)){if(out==null)throw new IOException("Cannot write to selected location.");copy(in,out);runOnUiThread(()->info("STL saved","Your model was saved. Open it in a slicer to inspect size, orientation and supports."));}catch(Exception e){error(e);}});}
+        if(req==SAVE&&data.getData()!=null){Uri dest=data.getData();worker.execute(()->{try(InputStream in=new FileInputStream(new File(getCacheDir(),"model.stl"));OutputStream out=getContentResolver().openOutputStream(dest,"wt")){if(out==null)throw new IOException("Cannot write to selected location.");copy(in,out);runOnUiThread(()->info("STL saved","Your model was saved. Open it in a slicer to inspect size, orientation and supports."));}catch(Exception e){error(e);}});}
     }
     private void upload(){
         if(busy)return;if(photos.size()<8){info("More angles needed","Choose at least 8 distinct photos; aim for 30–80 for an object.");return;}
@@ -153,5 +162,4 @@ public class MainActivity extends Activity {
         }catch(Exception e){error(e);}finally{busy=false;runOnUiThread(()->export.setEnabled(true));}});
     }
 }
-
 

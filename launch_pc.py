@@ -1,8 +1,8 @@
-from photoforge.desktop import Desktop
 import sys
 
 if __name__ == '__main__':
     if '--self-test' in sys.argv:
+        from photoforge.desktop import Desktop
         import json
         import trimesh
         import numpy as np
@@ -41,4 +41,5 @@ if __name__ == '__main__':
             (path/'self-test.json').write_text(json.dumps(dict(status='fail',error=str(e))))
             raise
     else:
-        Desktop().run()
+        from photoforge.startup import launch
+        launch(check='--startup-check' in sys.argv)

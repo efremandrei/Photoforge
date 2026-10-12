@@ -1,4 +1,12 @@
-# Version 1.0.0 · build 1 verification
+# Version 1.1.0 · build 2 verification
+
+- Android release assembly and lint passed with the custom adaptive launcher icon and AndroidX native splash screen. The installed application's icon was decoded as `AdaptiveIconDrawable` and visually inspected. Cold-start recordings show the cube logo, application wordmark, and transition to the usable screen, with the saved light or dark app theme restored.
+- Installed the release APK over version 1.0.0 without uninstalling. A digest of all saved preferences matched before and after the upgrade: `7ff8d712931a1151df3bec3709ea0d5be437020214071641e06b3735f06aa11b`. Package identity and the original RSA release certificate are unchanged; versionCode is now 2 and versionName is 1.1.0.
+- All 12 Python checks passed. The exact updated release APK passed the emulator flow: photo upload, real CPU reconstruction, preview, sealed STL export/download, save and theme persistence. A repeated-save check exposed that the default output mode could leave old file contents; saving now explicitly requests truncation (`wt`), and the repeated-save flow passed.
+- The packaged Windows executable displayed the startup window during initialization and reached the workspace in the startup-check run (9.453 seconds on this host), then passed its mesh/export/backend/engine self-test. The splash is removed when imports and workspace initialization complete; no minimum display timer is used. An interactive Windows visual check is still needed: the hidden-host screenshot was black and could not establish appearance.
+- Physical Samsung camera capture, home Wi-Fi/firewall pairing, Android 10/11 splash appearance, and physical printing remain untested. Android 15 emulator startup and upgrade checks are confirmed.
+
+## Initial version 1.0.0 · build 1 verification
 
 - 12 Python checks passed: millimetre scaling and STL readback, explicit opt-in for inferred repair, rejection of invalid sizes/crops, pairing authentication, real mesh export/download, malformed scan identifiers, and preservation of continuous surfaces in the simplified preview.
 - COLMAP 4.2.1 CPU and OpenMVS v2.4.0 reconstructed the official 11-photo OpenMVG Sceaux Castle example. All 11 cameras registered. The original raw mesh has 146,332 triangles. Its explicitly sealed STL has 149,584 triangles, positive volume, watertight topology and maximum extent 100.0 mm after serialization/readback.

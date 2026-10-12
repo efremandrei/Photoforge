@@ -17,6 +17,21 @@ public class FlowTest extends Instrumentation {
     private View find(View v,String text){if(v instanceof TextView&&((TextView)v).getText().toString().equals(text))return v;if(v instanceof ViewGroup){ViewGroup g=(ViewGroup)v;for(int i=0;i<g.getChildCount();i++){View x=find(g.getChildAt(i),text);if(x!=null)return x;}}return null;}
     private void click(String text){runOnMainSync(()->{View v=find(activity.getWindow().getDecorView(),text);if(v==null)throw new RuntimeException("Missing button: "+text);v.performClick();});}
     @Override public void onStart(){Bundle result=new Bundle();try{
+        if("icon".equals(args.getString("mode"))){
+            Context target=getTargetContext();android.graphics.drawable.Drawable icon=target.getPackageManager().getApplicationIcon(target.getPackageName());
+            android.graphics.Bitmap bitmap=android.graphics.Bitmap.createBitmap(192,192,android.graphics.Bitmap.Config.ARGB_8888);
+            icon.setBounds(0,0,192,192);icon.draw(new android.graphics.Canvas(bitmap));
+            File out=new File(target.getExternalFilesDir(null),"installed-icon.png");try(OutputStream file=new FileOutputStream(out)){bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,file);}
+            result.putString("stream","Installed icon: "+icon.getClass().getSimpleName());finish(Activity.RESULT_OK,result);return;
+        }
+        if("snapshot".equals(args.getString("mode"))){
+            android.content.SharedPreferences saved=getTargetContext().getSharedPreferences("settings",0);
+            java.util.TreeMap<String,Object> values=new java.util.TreeMap<>(saved.getAll());
+            byte[] hash=java.security.MessageDigest.getInstance("SHA-256").digest(values.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex=new StringBuilder();for(byte b:hash)hex.append(String.format(java.util.Locale.US,"%02x",b&255));
+            result.putString("stream",new JSONObject().put("preferences_sha256",hex.toString()).put("keys",values.size()).put("dark",saved.getBoolean("dark",true)).toString());
+            finish(Activity.RESULT_OK,result);return;
+        }
         Context target=getTargetContext();JSONArray photos=new JSONArray();
         for(String name:getContext().getAssets().list("scan")){
             File photo=new File(target.getCacheDir(),name);
@@ -37,7 +52,7 @@ public class FlowTest extends Instrumentation {
         if(monitor.getHits()==0||!stl.exists()||stl.length()<84)throw new RuntimeException("STL was not downloaded or save picker was not invoked.");
         File saved=new File(target.getCacheDir(),"saved-test.stl");Intent destination=new Intent().setData(Uri.fromFile(saved));runOnMainSync(()->activity.onActivityResult(12,Activity.RESULT_OK,destination));
         end=System.currentTimeMillis()+10000;while(System.currentTimeMillis()<end&&saved.length()!=stl.length())Thread.sleep(250);
-        if(saved.length()!=stl.length())throw new RuntimeException("Save did not preserve STL byte count.");
+        if(saved.length()!=stl.length())throw new RuntimeException("Save byte count mismatch: expected "+stl.length()+", actual "+saved.length());
         Thread.sleep(500);sendKeyDownUpSync(android.view.KeyEvent.KEYCODE_BACK);
         click("☀");Thread.sleep(500);
         if(target.getSharedPreferences("settings",0).getBoolean("dark",true))throw new RuntimeException("Theme preference did not persist.");

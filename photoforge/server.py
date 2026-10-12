@@ -7,6 +7,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 from .engine import Jobs, ROOT
 from .mesh import prepare, preview
+from . import __version__, BUILD
 
 
 class ExportOptions(BaseModel):
@@ -40,7 +41,7 @@ def create_app(jobs=None, token=None):
 
     @app.get('/health')
     def health():
-        return {'app': 'PhotoForge3D', 'version': '1.0.0', 'build': 1}
+        return {'app': 'PhotoForge3D', 'version': __version__, 'build': BUILD}
 
     @app.get('/jobs')
     def listing():

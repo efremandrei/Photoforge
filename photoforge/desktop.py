@@ -24,8 +24,8 @@ Photos cannot measure an absolute size on their own. The size field scales the f
 
 
 class Desktop:
-    def __init__(self):
-        self.root = tk.Tk()
+    def __init__(self, root=None):
+        self.root = root if root is not None else tk.Tk()
         self.root.title('PhotoForge3D · photos to printable geometry')
         if (ROOT/'assets/icon.ico').exists():
             self.root.iconbitmap(str(ROOT/'assets/icon.ico'))
@@ -113,7 +113,7 @@ class Desktop:
         self.build()
 
     def about(self):
-        messagebox.showinfo('About PhotoForge3D', 'PhotoForge3D 1.0.0 · build 1\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\nCOLMAP (BSD) + OpenMVS (AGPL-3.0)\nLocal photogrammetry and verified STL export.')
+        messagebox.showinfo('About PhotoForge3D', 'PhotoForge3D 1.1.0 · build 2\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\nCOLMAP (BSD) + OpenMVS (AGPL-3.0)\nLocal photogrammetry and verified STL export.')
 
     def reload_scans(self):
         jobs = sorted([json.loads(p.read_text()) for p in self.jobs.base.glob('*/job.json')], key=lambda d:d['created'], reverse=True)
@@ -234,3 +234,4 @@ class Desktop:
         self.root.destroy()
 
     def run(self):self.root.mainloop()
+
