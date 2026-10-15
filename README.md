@@ -2,12 +2,12 @@
 
 PhotoForge3D reconstructs a real 3D surface from overlapping photographs and prepares an STL for a slicer. Android captures/imports photos; a Windows PC runs COLMAP 4.2.1 and OpenMVS 2.4.0 on the CPU. The PC app also works independently with photos from any camera. No paid reconstruction API or cloud account is required.
 
-Source repository: [efremandrei/Photoforge](https://github.com/efremandrei/Photoforge). Version 1.1.0, build 2 adds matching branded startup splashes and an adaptive Android launcher icon. It updates the previous APK in place.
+Source repository: [efremandrei/Photoforge](https://github.com/efremandrei/Photoforge). Version 1.2.0, build 3 keeps the scan-frame icon inside Android's circular mask, adds a scanning animation to startup, and provides **About PhotoForge3D → View splash screen** to inspect the branding anytime. It updates the previous APK in place.
 
 ## Start
 
 1. Download the Windows package from [Releases](https://github.com/efremandrei/Photoforge/releases), extract the entire ZIP into a writable folder, and open `PhotoForge3D-PC.exe`. Keep the included `_internal` and `tools` folders beside it. Its splash appears while the workspace loads and closes when it is ready.
-2. Install `PhotoForge3D-v1.1.0-build-2.apk` on an Android 10+ phone. It contains no native ABI libraries and supports Samsung arm64 devices. The app uses the platform splash screen with its own cube-and-camera artwork, and honors the saved app theme after startup.
+2. Install `PhotoForge3D-v1.2.0-build-3.apk` on an Android 10+ phone. It contains no native ABI libraries and supports Samsung arm64 devices. The app uses the platform splash screen with its own scan-framed cube and honors the saved app theme after startup. Android shows the splash on fresh starts, not when resuming an already open screen. It closes when the workspace is ready, with no artificial wait. To see it for as long as you like, open **About PhotoForge3D → View splash screen**, then tap **Continue**.
 3. On the PC, click **Connect Android phone**. On the phone, enter the displayed PC address and pairing code, then click **Connect**. Use the same trusted home Wi-Fi and allow the PC app on **private networks** if Windows asks. HTTP on the local network is unencrypted. Photos are sent only to the address you enter; they are stored on the PC in its `jobs` folder.
 4. Take or import photos and tap **Reconstruct on PC**. Keep the PC app open; reconstruction continues if you leave the phone app. Reopen it to restore the selected scan and its progress. CPU processing can take minutes to hours, depending on the photo set.
 5. Rotate the preview, crop background using X/Y/Z percentage ranges, enter the desired **longest dimension in millimetres**, and choose **Prepare & save STL**. Android asks where to save the file. The PC can import photos and save an STL without a phone.
@@ -40,4 +40,4 @@ The real pipeline reconstructed all 11 views from the [official OpenMVG Sceaux C
 
 AGPL-3.0-or-later. COLMAP is BSD licensed; OpenMVS is AGPL-3.0. See `THIRD_PARTY.md` and the included notices. Corresponding application source is available in this repository; engine source is linked with exact release versions.
 
-Andrei Efremuahkin · andrei.efr@gmail.com · version 1.1.0, build 2.
+Andrei Efremuahkin · andrei.efr@gmail.com · version 1.2.0, build 3.

@@ -2,7 +2,7 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 root=Path(__file__).resolve().parents[1]
 base=root/'dist/PhotoForge3D-PC'
-archive=root/'artifacts/PhotoForge3D-PC-v1.1.0-build-2-windows-x64.zip'
+archive=root/'artifacts/PhotoForge3D-PC-v1.2.0-build-3-windows-x64.zip'
 with ZipFile(archive,'w',ZIP_DEFLATED,compresslevel=6) as z:
     for p in base.rglob('*'):
         rel=p.relative_to(base)

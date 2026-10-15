@@ -70,8 +70,9 @@ public class MainActivity extends Activity {
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);outer.addView(scroll,new LinearLayout.LayoutParams(-1,-1));
         content=new LinearLayout(this);content.setOrientation(LinearLayout.VERTICAL);content.setPadding(dp(18),dp(16),dp(18),dp(24));scroll.addView(content);
         LinearLayout header=new LinearLayout(this);header.setGravity(Gravity.CENTER_VERTICAL);
-        TextView title=label("◈ PhotoForge3D",23,fg);header.addView(title,new LinearLayout.LayoutParams(0,-2,1));
-        header.addView(button(dark?"☀":"☾",()->{dark=!dark;prefs.edit().putBoolean("dark",dark).apply();previewLoaded=false;build();}));content.addView(header);
+        ImageView brand=new ImageView(this);brand.setImageResource(R.mipmap.ic_launcher);brand.setContentDescription("PhotoForge3D application icon");header.addView(brand,new LinearLayout.LayoutParams(dp(40),dp(40)));
+        TextView title=label(" PhotoForge3D",22,fg);header.addView(title,new LinearLayout.LayoutParams(0,-2,1));
+        Button themeButton=button(dark?"☀":"☾",()->{dark=!dark;prefs.edit().putBoolean("dark",dark).apply();previewLoaded=false;build();});themeButton.setMinWidth(dp(48));header.addView(themeButton,new LinearLayout.LayoutParams(dp(56),-2));content.addView(header);
         content.addView(label("PHOTOS → GEOMETRY → PRINT",11,0xff36c8b2));
         content.addView(label("Capture every angle. Rebuild a real surface.\nSet the size and take it to your slicer.",15,muted));
         LinearLayout pc=card("01   CONNECT YOUR PC");
@@ -105,7 +106,20 @@ public class MainActivity extends Activity {
     private void info(String title,String text){new AlertDialog.Builder(this).setTitle(title).setMessage(text).setPositiveButton("OK",null).show();}
     private void error(Exception e){String s=e.getMessage();runOnUiThread(()->info("PhotoForge3D",s==null?"The operation failed. Please retry.":s));}
     private void guide(){info("Capture guide","Keep the object still and walk the camera around it.\n\nTake 30–80 sharp photos in 2–3 rings at different heights, with 70–80% overlap. Keep the same lens, avoid zoom, and use soft, even light.\n\nCapture every side you need. A turntable with an unmasked stationary background can confuse reconstruction. Matte, textured objects work best. Glossy, clear, plain, or moving objects often fail.\n\nCPU processing can take minutes to hours. Cropping and gap sealing may change the model; inspect the result in your slicer.");}
-    private void about(){info("About PhotoForge3D","Version 1.1.0 · build 2\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\n\nLocal photogrammetry with COLMAP (BSD) and OpenMVS (AGPL-3.0). STL checks confirm a closed solid, not guaranteed dimensional accuracy or printability.");}
+    private void about(){new AlertDialog.Builder(this).setTitle("About PhotoForge3D").setMessage("Version 1.2.0 · build 3\nAndrei Efremuahkin\nandrei.efr@gmail.com\nhttps://github.com/efremandrei/Photoforge\n\nLocal photogrammetry with COLMAP (BSD) and OpenMVS (AGPL-3.0). STL checks confirm a closed solid, not guaranteed dimensional accuracy or printability.").setNeutralButton("View splash screen",(dialog,which)->showSplashPreview()).setPositiveButton("OK",null).show();}
+    private void showSplashPreview(){
+        Dialog preview=new Dialog(this,dark?android.R.style.Theme_Material_NoActionBar:android.R.style.Theme_Material_Light_NoActionBar);
+        android.widget.FrameLayout page=new android.widget.FrameLayout(this);page.setBackgroundColor(bg);
+        ImageView logo=new ImageView(this);logo.setImageResource(dark?R.drawable.ic_splash_logo:R.drawable.ic_splash_logo_light);logo.setContentDescription("PhotoForge3D scan-framed three-dimensional cube");
+        android.widget.FrameLayout.LayoutParams logoParams=new android.widget.FrameLayout.LayoutParams(dp(288),dp(288),Gravity.CENTER);page.addView(logo,logoParams);
+        LinearLayout footer=new LinearLayout(this);footer.setOrientation(LinearLayout.VERTICAL);footer.setGravity(Gravity.CENTER);footer.setPadding(dp(24),0,dp(24),dp(32));
+        TextView title=label("PhotoForge3D",26,fg);title.setGravity(Gravity.CENTER);footer.addView(title);
+        TextView caption=label("PHOTOS TO PRINT",12,0xff36c8b2);caption.setGravity(Gravity.CENTER);footer.addView(caption);
+        Button close=button("Continue",preview::dismiss);footer.addView(close,new LinearLayout.LayoutParams(-1,dp(52)));
+        page.addView(footer,new android.widget.FrameLayout.LayoutParams(-1,-2,Gravity.BOTTOM));preview.setContentView(page);
+        preview.setOnShowListener(dialog->{android.graphics.drawable.Drawable drawable=logo.getDrawable();if(drawable instanceof android.graphics.drawable.Animatable)((android.graphics.drawable.Animatable)drawable).start();});
+        preview.show();android.view.Window window=preview.getWindow();if(window!=null){window.setStatusBarColor(bg);window.setNavigationBarColor(bg);window.getDecorView().setSystemUiVisibility(dark?0:View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR|View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);}
+    }
     private String validateAddress(String s) throws Exception{
         URI uri=new URI(s);if(!"http".equals(uri.getScheme())||uri.getHost()==null||uri.getUserInfo()!=null||uri.getQuery()!=null||uri.getFragment()!=null||!(uri.getPath()==null||uri.getPath().isEmpty()||uri.getPath().equals("/")))throw new Exception("Enter the PC's local HTTP address, including :8765.");
         InetAddress ip=InetAddress.getByName(uri.getHost());if(!(ip.isSiteLocalAddress()||ip.isLoopbackAddress()))throw new Exception("Use a local PC address on your trusted Wi-Fi.");return s.replaceAll("/+$","");

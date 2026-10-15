@@ -28,7 +28,7 @@
     </style>
     <style name="Theme.PhotoForge.Starting.Light" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/forge_light</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo_light</item>
         <item name="postSplashScreenTheme">@style/Theme.PhotoForge.Light</item>
         <item name="android:statusBarColor">@color/forge_light</item>
         <item name="android:navigationBarColor">@color/forge_light</item>

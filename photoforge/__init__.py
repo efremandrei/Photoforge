@@ -1,2 +1,2 @@
-__version__ = '1.1.0'
-BUILD = 2
+__version__ = '1.2.0'
+BUILD = 3

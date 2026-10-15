@@ -1,0 +1,3 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android" android:drawable="@drawable/ic_splash_art_light">
+    <target android:name="scanline" android:animation="@animator/splash_scan" />
+</animated-vector>

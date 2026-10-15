@@ -1,4 +1,11 @@
-# Version 1.1.0 · build 2 verification
+# Version 1.2.0 · build 3 verification
+
+- Android release assembly, lint, and instrumentation APK assembly passed. The installed adaptive icon was decoded and inspected: its scan-frame corners now remain visible inside the circular mask. A recorded Android 15 cold launch shows the scanning line, cube logo, application wordmark, and transition to the workspace. The main header displays the actual application icon.
+- Exercised **About PhotoForge3D → View splash screen** in the installed release with the saved light theme. The full-screen preview displays the logo, name and caption; **Continue** returns to the existing workspace. Native startup remains tied to initialization without a minimum display timer. Resuming an open activity does not replay Android's splash.
+- Installed over build 2 without uninstalling. All six saved preference values retained their digest: `45409781b3e3a06d79115a85f0e0f7620bd48c4a618513a06da12b38fc90d0ca`. APK identity and release certificate remain unchanged; versionName is 1.2.0 and versionCode is 3. Release signature verification passed.
+- All 12 Python checks passed. Packaged Windows startup reached the workspace and removed the splash in 11.969 seconds on this host; its mesh/export/backend/engine self-test also passed. The Windows package uses the revised matching icon. Interactive Windows appearance and physical Samsung behavior remain unverified; the hidden-host Windows capture does not establish appearance. The prior full Android reconstruction/export check below was not repeated for these branding changes.
+
+## Version 1.1.0 · build 2 verification
 
 - Android release assembly and lint passed with the custom adaptive launcher icon and AndroidX native splash screen. The installed application's icon was decoded as `AdaptiveIconDrawable` and visually inspected. Cold-start recordings show the cube logo, application wordmark, and transition to the usable screen, with the saved light or dark app theme restored.
 - Installed the release APK over version 1.0.0 without uninstalling. A digest of all saved preferences matched before and after the upgrade: `7ff8d712931a1151df3bec3709ea0d5be437020214071641e06b3735f06aa11b`. Package identity and the original RSA release certificate are unchanged; versionCode is now 2 and versionName is 1.1.0.
